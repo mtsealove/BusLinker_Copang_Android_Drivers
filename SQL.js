@@ -37,8 +37,18 @@ exports.GetRunInfo=function(Company, ID, key) {
 }
 
 //운행정보 상세
-exports.GetRunInfoDetail=function(Company) {
-    var query=`select * from RunInfo where Company='${Company}'`;
+exports.GetRunInfoDetail=function(ID) {
+    var query=`select * from RunInfo where ID=${ID}`;
     var result=connection.query(query)[0];
     return result;
 };
+
+//특정 날짜에 운행이 없는 우리회사의 기사님
+exports.GetFreeDrivers=function(CompanyID, date, cat, key) {
+    var query=`select distinct * from BusDrivers where CompanyID='${CompanyID}' and ID in(select DriverID from RunInfoEach where not RunDate='${date}')`;
+    if(cat&&key){   //검색어 존재
+        query+=`and ${cat}='${key}'`;
+    }
+    var result=connection.query(query);
+    return result;
+}

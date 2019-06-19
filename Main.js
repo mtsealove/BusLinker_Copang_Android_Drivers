@@ -32,38 +32,48 @@ io.sockets.on('connection', function (socket) {
     //운행정보 리스트
     socket.on('GetRunInfo', function (data) {
         var key = data.key;
-        var Company=data.Company;
-        var DriverID=data.DriverID;
+        var Company = data.Company;
+        var DriverID = data.DriverID;
         console.log(Company);
 
-        var result = mysql.GetRunInfo(Company, DriverID,key);
+        var result = mysql.GetRunInfo(Company, DriverID, key);
         if (result)
             socket.emit('RunInfo', result);
         else
             socket.emit('RunInfo', 'Err');
     });
+
     //운행정보 각각
     socket.on('GetRunInfoByID', function (data) {
         var ID = data.RunInfoID;
-        console.log("ID: "+ID);
+        console.log("ID: " + ID);
         var result = mysql.GetRunInfoDetail(ID);
         console.log(result);
-        if (result)
+        if (result != null)
             socket.emit('RunInfoByID', result);
         else
             socket.emit('RunInfoByID', 'Err');
     });
+    //우리회사 기사님
+    socket.on('GetFreeDriver', function (data) {
+        console.log("기사님 호출");ㅎ
+        var CompanyID = data.CompanyID;
+        var date = data.date;
+        var cat=data.cat;
+        var key=data.key;
+        var result = mysql.GetFreeDrivers(CompanyID, date,cat, key);
+        if (result != null)
+            socket.emit('FreeDriver', result);
+        else
+            socket.emit('FreeDriver', 'Err');
+    });
 });
 
-var express=require('express');
-var app=express();
+var express = require('express');
+var app = express();
 app.set('view engine', 'ejs');
 app.set('views', './Views');
 
-app.get('/Map', function(res, req){
+app.get('/Map', function (res, req) {
     res.render('Map', { 'title': '로그인' });
 }); 
-
-app.listen(3300, function(){
-    console.log('웹 실행중')
-});
